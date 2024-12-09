@@ -15,11 +15,10 @@ const Login = () => {
     try {
       // Fetch the list of friends/users from the backend
       const { data } = await axios.get("/api/user/friends");
+      // Ensure the response is an array, otherwise extract the users array
       const users = Array.isArray(data) ? data : data.users; // Adjust to match the backend response
+      // Find a user matching the entered email
       const user = users.find((user) => user.email === email);
-
-      console.log("Backend response:", user);
-      // Find user by email
 
       if (user) {
         // Compare the password

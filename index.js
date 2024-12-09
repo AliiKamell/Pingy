@@ -20,15 +20,17 @@ app.use(express.json()); // to accept json data
 
 const server = http.createServer(app);
 
-app.use(cors());
+app.use(cors()); //to enable  cors for all incoming requests
 
 const url = process.env.MONGO_URL;
-app.use("/api/user", userRoutes);
+app.use("/api/user", userRoutes); //api routes for user related operations
 
+
+// Endpoint to fetch chat messages based on a conversation ID
 app.post("/api/user/chat", (req, res) => {
   convID = (req.body.username.toUpperCase() + req.body.friend.toUpperCase())
     .split("")
-    .sort()
+    .sort() 
     .join("");
   Room.findOne({ name: convID })
     .then((room) => {
@@ -47,12 +49,13 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("User connected ", socket.id);
+  console.log("User connected ", socket.id); // Logs the connected user's socket ID
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    console.log("user disconnected"); // Logs when a user disconnects
   });
 });
 
+// Endpoint to send and store chat messages
 app.post("/api/user/messages", (req, res) => {
   const username = JSON.parse(req.body.username).name;
 
@@ -73,6 +76,7 @@ app.post("/api/user/messages", (req, res) => {
     messages: messageData,
   };
   Room.findOne({ name: convID }).then((room) => {
+    // Checks if the chat room already exists
     if (room) {
       room.messages.push(messageData);
       room.save();
@@ -93,7 +97,9 @@ mongoose.connect(url).then(() => {
   console.log("MongoDB server started");
 });
 
+// Middleware to handle 404 errors (route not found)
 app.use(notFound);
+// Middleware to handle other errors
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;

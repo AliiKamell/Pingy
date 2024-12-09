@@ -5,6 +5,7 @@ import "./Chat.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "react-bootstrap";
 
+// Create a connection to the WebSocket server
 const socket = io.connect("http://localhost:5000");
 
 const Chat = () => {
@@ -16,6 +17,7 @@ const Chat = () => {
   const user = localStorage.getItem("userInfo");
   const userName = JSON.parse(user).name;
 
+  // Fetch conversation history when component mounts or conversation changes
   useEffect(() => {
     axios
       .post("/api/user/chat", {
@@ -31,28 +33,26 @@ const Chat = () => {
       });
   }, [conversation]);
 
+  // Function to send a message
   const sendMessage = (messageData) => {
+    // Clear the message input field
     document.getElementById("message-to-send").value = "";
+
+    // Listen for a new message from the WebSocket server and append it to the message list
     socket.on("newmessage", function (data) {
       addMessages(data);
       function addMessages(message) {
+        // Append the message to the message list in the DOM
         document.getElementById("messages").append(<p>{message.message}</p>);
       }
     });
 
     axios
-      .post(
-        "/api/user/messages",
-        {
-          username: messageData.user,
-          friend: messageData.friend,
-          message: messageData.message,
-        },
-        {
-          withCredentials: true,
-          crossdomain: true,
-        }
-      )
+      .post("/api/user/messages", {
+        username: messageData.user,
+        friend: messageData.friend,
+        message: messageData.message,
+      })
       .then((res) => {})
       .catch((e) => {
         console.log("Can't Register ", e);
@@ -121,7 +121,6 @@ const Chat = () => {
                 })}
               </ul>
             </div>
-
             <div className="send-message">
               <textarea
                 className="message-to-send"

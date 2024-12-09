@@ -2,9 +2,11 @@ const asyncHandler = require("express-async-handler");
 const User = require("../Models/userModel");
 const generateToken = require("../config/generateToken");
 
+
+// Function to get a list of all friends (users) from the database
 const getAllFriends = asyncHandler(async (req, res) => {
   const users = await User.find(
-    {},
+    {}, // Find all users
     {
       __v: false,
       token: false,
@@ -13,12 +15,16 @@ const getAllFriends = asyncHandler(async (req, res) => {
   res.json({ status: 200, users });
 });
 
+
+// Function to register a new user
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
-    res.status(400);
-    throw new Error("Please Enter all the fields");
+    res.status(400); // Set HTTP status to 400 (Bad Request)
+    throw new Error("Please Enter all the fields"); // Throw an error if fields are missing
   }
+
+  // Check if a user with the same email already exists
   const userExistes = await User.findOne({ email });
 
   if (userExistes) {
@@ -26,12 +32,14 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already exists");
   }
 
+  // Create a new user
   const user = await User.create({
     name,
     email,
     password,
   });
 
+  
   if (user) {
     res.status(201).json({
       _id: user._id,
@@ -48,6 +56,8 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+
+// Function to login a user
 const login = (async (req, res, next) => {
   const { email, password } = req.body;
 

@@ -7,8 +7,6 @@ import "./Dashboard.css";
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [friends, setFriends] = useState([]);
-  const [friendsInfo, setFriendsInfo] = useState(null); // State for friendsInfo
-  const [friend, setFriend] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,10 +22,6 @@ const Dashboard = () => {
         const { data } = await axios.get("/api/user/friends");
         const friendNames = data.users.map((user) => user.name);
         setFriends(friendNames);
-
-        // Save to local storage and update state
-        localStorage.setItem("friendsInfo", JSON.stringify(friendNames));
-        setFriendsInfo(friendNames);
       } catch (error) {
         console.error("Error fetching friends:", error);
       }
@@ -36,24 +30,6 @@ const Dashboard = () => {
     fetchFriends();
   }, []);
 
-  const checkUser = (friendName) => {
-    axios
-      .post(
-        "/api/check",
-        { username: friendName.toUpperCase() },
-        { withCredentials: true, crossdomain: true }
-      )
-      .then((response) => {
-        if (response.data.error) {
-          alert(response.data.error);
-        } else {
-          navigate(`/chat/${response.data}`);
-        }
-      })
-      .catch((error) => {
-        console.error("Error checking user:", error);
-      });
-  };
 
   return (
     <div className="dash">
@@ -71,18 +47,6 @@ const Dashboard = () => {
       <div className="welcome-message">
         <h3>Live Chat Now With Your Friends</h3>
       </div>
-      {/* <div className="new-user">
-        <input
-          className="friend-name"
-          value={friend}
-          onChange={(event) => setFriend(event.target.value)}
-          type="text"
-          placeholder="Type your friend's username"
-        />
-        <button className="chat-button" onClick={() => checkUser(friend)}>
-          Chat
-        </button>
-      </div> */}
       <div className="friends-dashboard-container">
         <p className="chatsp">Chats</p>
         {friends.length > 0 ? (

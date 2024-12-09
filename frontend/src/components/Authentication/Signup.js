@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import React, { useState } from "react";
 import { Alert, Button, Form, InputGroup } from "react-bootstrap";
@@ -31,11 +30,14 @@ const Signup = () => {
     }
 
     try {
+      // Configuration for HTTP request headers
+      // This tells the server that the data being sent in the body of the request is in JSON format.
       const config = {
         headers: {
           "Content-type": "application/json",
         },
       };
+
       const { data } = await axios.post(
         "/api/user",
         { name, email, password },
@@ -93,10 +95,7 @@ const Signup = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <Button
-              variant="outline-secondary"
-              onClick={handleClick}
-            >
+            <Button variant="outline-secondary" onClick={handleClick}>
               {show ? "Hide" : "Show"}
             </Button>
           </InputGroup>
@@ -111,10 +110,7 @@ const Signup = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
-            <Button
-              variant="outline-secondary"
-              onClick={handleClick}
-            >
+            <Button variant="outline-secondary" onClick={handleClick}>
               {show ? "Hide" : "Show"}
             </Button>
           </InputGroup>
